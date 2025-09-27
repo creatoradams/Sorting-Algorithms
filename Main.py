@@ -87,6 +87,7 @@ def gen_worst(n, alg_name):
 def gen_avg(n, alg_name):
     return [random.randint(0, 10**6) for _ in range(n)]
 
+
 #===================================
 # Menu / Prompting
 #===================================
