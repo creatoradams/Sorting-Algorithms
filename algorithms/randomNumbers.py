@@ -1,8 +1,29 @@
 import random
 import numpy as np
+class randomNumbers:
+    SIZES = (100, 1000, 10000, 100000) # testing number sets
 
-# generate random numbers
-arr100 = np.random.randint(0, 100, size=100)  # 100 ints
+    """ Average case """
+    def average(num: int, low: int = 0, high: int = None) -> np.ndarray:
+        return np.random.randint(low, high, size=num)
 
-# print out the first 100 elements of the array
-print("Original:", arr100[:])
+    """ best case """
+    def best(n: int) -> np.ndarray:
+        return np.arange(n)
+
+    """ worst case """
+    def worst(n: int) -> np.ndarray:
+        return np.arange(n)
+
+    """ build a dictionary of array sizes """
+    def generate(cls, case: str = "Avg", unique: bool = False) -> dict[int, np.ndarray]:
+        out: dict[int, np.ndarray] = {}
+        for num in cls.SIZES:
+            if case == "best":
+                arr = cls.best(num)
+            elif case == "worst":
+                arr = cls.worst(num)
+            else:
+                arr = cls.average(num)
+            out[num] = arr
+        return out
