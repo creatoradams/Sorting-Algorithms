@@ -72,6 +72,7 @@ def time_many(alg_func, size_list, case_gen, trials = 1):
         results.append(total / trials) # avg runtime
     return results # list of runtimes
 
+
 #===================================
 # Data generators for best/worst/avg
 #===================================
