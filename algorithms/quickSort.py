@@ -2,7 +2,7 @@ from typing import List, Sequence, MutableSequence
 import random
 import numpy as np
 
-class quickSort:
+class QuickSort:
 
     # Quick Sort Algorithm
     @staticmethod

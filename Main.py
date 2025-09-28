@@ -1,3 +1,4 @@
+from matplotlib import pyplot as plt
 
 from algorithms import bubbleSort
 from algorithms import mergeSort
@@ -5,107 +6,115 @@ from algorithms import quickSort
 from algorithms import randomNumbers
 from algorithms import Timer
 from algorithms import selectionSort   # kept for completeness; slot #4 remains the PDF placeholder
-import numpy
+import numpy as np
+import random
+import matplotlib
+import pandas as pd
 
+SIZES = [100, 1000, 10000, 100000]
 
-                # the algorithms variables are declared in ALGOS and run_case
+# the algorithms variables are declared in ALGOS and run_case
 
-
-# Selection Sort Algorithm
-
-# Display runtime table for each size array
 
 # graph the number of comparisons performed and time spent with data size
 
+""" ------ Data generators for best/worst/average ------- """
 
-
-
-""" ------ Data generators for best/worst/avg ------- """
-
-
-def gen_best(n, alg_name):
+def best(n: int):
     return list(range(n))
 
-def gen_worst(n, alg_name):
-    return list(range(n, 0, -1))
+def worst(n: int):
+    return list(range(n, -1, -1 -1))
 
-def gen_avg(n, alg_name):
-    return [random.randint(0, 10**6) for _ in range(n)]
+def avg(n: int):
+    return [random.randint(0, 10**6) for i in range(n)]
 
 
+""" assign algorithms """
+bs = bubbleSort.BubbleSort()
+bubble = bs.bubble_sort
 
+# mergeSort returns a new python list
+ms = mergeSort.MergeSort()
+merge = ms.sort
+
+# quicksort: expects and returns numpy array
+quick = lambda L: quickSort.QuickSort.sort(np.array(L)).tolist()
+
+# selectionsort also expects and returns numpy arrays
+select = lambda L: selectionSort.SelectionSort.sort(np.array(L)).tolist()
 
 """ -------- Menu mappings --------- """
 
 ALGOS = {
-    1: ("Bubble Sort", bubbleSort.bubbleSort().bubble_sort),
-    2: ("Merge Sort", mergeSort.mergeSort().sort),
-    3: ("Quick Sort", (lambda data: quickSort.quickSort.sort(numpy.array(list(data))))),
-    4: ("Selection Sort (replacing this line with the algorithm )", None),  # still needs to be done
+    1: ("Bubble Sort", bubble),
+    2: ("Merge Sort", merge),
+    3: ("Quick Sort", quick),
+    4: ("Selection Sort", select),
 }
 
 CASES = \
 {
-    ("Best Case", gen_best),   # case #1
-    ("Average Case", gen_avg), # case #2
-    ("Worst Case", gen_worst), # case #3
+    1: ("Best Case", best),   # case #1
+    2: ("Average Case", avg), # case #2
+    3: ("Worst Case", worst), # case #3
 }
 
+""" -------- Prompts for user --------- """
 
-""" -------- Prompts --------- """
-
-def prompt_yes_no(smg: str) -> bool:
+def prompt(msg: str) -> bool:
     while True:
         t = input(msg).strip().lower()
         if t in ("y", "yes"): return True
         if t in ("n", "no"): return False
         print("Please respond with 'y' or 'n'.")
 
-def prompt_int(msg: str, lo: int, hi: int) -> int:
+def promptInt(msg: str, low: int, high: int) -> int:
     while True:
         try:
             v = int(input(msg).strip())
-            if lo <= v <= hi:
+            if low <= v <= high:
                 return v
         except ValueError:
             pass
-        print(f"Enter a number between {lo} and {hi}.")
+        print(f"Enter a number between {low} and {high}.")
 
 
-""" -------- Run a chosen algorithm --------- """
+""" -------- Run the chosen algorithm --------- """
 
-def run_case(alg_key: int):
-    alg_name, alg_func, = ALGOS[alg_key]
-
-    print(f"\nCase Scenarios for {alg_name}:")
-    print("---------------")
-    print("1. Best Case")
-    print("2. Average Case")
-    print("3. Worst Case")
-    print(f"4. Exit {alg_name.lower()} test")
+def run(algKey: int):
+    alg_name, alg_func, = ALGOS[algKey]
 
     if alg_func is None:
         print("\n(This sorting algorithm isn't implemented yet")
 
     while True:
-        c = prompt_int("\nSelect the case (1-4): ", 1, 4)
+        print(f"\nCase Scenarios for {alg_name}:")
+        print("---------------")
+        print("1. Best Case")
+        print("2. Average Case")
+        print("3. Worst Case")
+        print(f"4. Back")
+        c = promptInt("\nSelect the case (1-4): ", 1, 4)
         if c == 4:
             return
-        case_name, gen = CASES[c]
-        print(f"\nIn {case_name.lower()},")
 
-        sizes = randomNUmbers.randomNumbers(SIZES)  # creating variable
+        caseName, gen = CASES[c]
+        print(f"\nIn {caseName.lower()},")
 
-        def case_gen(n):
+        # build a case generator that returns a list. Timer copies it
+        def case_gen(n: int):
             arr = gen(n)
-            try:
-                return list(arr)
-            except TypeError:
-                return arr.tolist()
+            return list(arr)
 
-        times = Timer.Time.timeMany(alg_func, sizes. case_gen)  # creating variable
+        # time the algorithm on all cases
+        times = Timer.Time.timeMany(alg_func, SIZES, case_gen)  # creating variable
+        plotTimes(alg_name, caseName, SIZES, times)
 
-        for n, t in zip(sizes, times):
+        # Print a simple runtime table
+        print("\n  N         Time (seconds)")
+        print("  ------------------------")
+        for n, t in zip(SIZES, times):
             if n == 100:
                 print(f"For N = {n},   it takes {t:.6f} seconds")
             elif n == 1000:
@@ -113,10 +122,10 @@ def run_case(alg_key: int):
             else:
                 print(f"For N = {n}, it takes {t:.6f} seconds")
 
-        while prompt_yes_no("\nDo you want to input another N (Y/N)?"):
-            n2 = int(input("What is the N? ").strip())
-            t2 = Timer.Time.timeMany(alg_func, [n2], case_gen)[0]  # creating variable, dont know if could put these all up at the top together with ALGOS or not
-            print(f"\nFor N = {n2}, it takes {t2:.6f} seconds")
+        while prompt("\nTest another N for this case? (y/n): "):
+            n2 = promptInt("Enter N: ", 1, 10_000_000)
+            t2 = Timer.Time.timeMany(alg_func, [n2], case_gen, trials=3)[0]
+            print(f"For N = {n2}, time = {t2:.6f} s")
 
         print(f"\nCase Scenarios for {alg_name}")
         print("---------------")
@@ -124,6 +133,26 @@ def run_case(alg_key: int):
         print("2. Average Case")
         print("3. Worst Case")
         print(f"4. Exit {alg_name.lower()} test")
+
+""" ---- DISPLAY GRAPH ---- """
+def plotTimes(alg_name: str, case_name: str, sizes, times):
+    """ Show a runtime chart for one algorithm/case. """
+    x = np.array(sizes, dtype=float)
+    y = np.array(times, dtype=float)
+
+    plt.figure()
+    plt.plot(x, y, marker='o')
+    plt.xscale('log')
+    plt.yscale('log')
+    plt.xlabel('n (log scale)')
+    plt.ylabel('T(n) seconds (log scale)')
+    plt.title(f'{alg_name} — {case_name}')
+    plt.grid(True, which='both', linestyle=':')
+    plt.tight_layout()
+    plt.show()
+
+
+
 
 """ -------- Main menu --------- """
 
@@ -136,12 +165,14 @@ def main():
             print(f"{k}. {ALGOS[k][0]}")
         print(f"{max(ALGOS)+1}. Exit")
 
-        sel = prompt_int(f"Select a sorting algorithm (1-{max(ALGOS)+1}): ", 1, max(ALGOS)+1)
-        if swl == max(ALGOS) + 1:
+        sel = promptInt(f"Select a sorting algorithm (1-{max(ALGOS)+1}): ", 1, max(ALGOS)+1)
+        if sel == max(ALGOS) + 1:
             print("\nBye!")
             break
-        run_case(sel)
+        run(sel)
+
+
 
 if __name__ == "__main__":
-    numpy.random.seed(42)
+    np.random.seed(42)
     main()

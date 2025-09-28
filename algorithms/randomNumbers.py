@@ -1,6 +1,6 @@
 import random
 import numpy as np
-class randomNumbers:
+class RandomNumbers:
     SIZES = (100, 1000, 10000, 100000) # testing number sets
 
     """ Average case """

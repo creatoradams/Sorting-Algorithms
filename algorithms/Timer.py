@@ -23,7 +23,7 @@ class Time:
                   out_seq = result.tolist()
           if out_seq != expected:
               raise AssertionError('The result is not equal to the expected result')
-
+          return elapsed
 
   def timeMany(alg_func, size_list, case_gen, trials=1, check=True):
       """

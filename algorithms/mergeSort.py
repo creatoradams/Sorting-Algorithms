@@ -1,6 +1,6 @@
 from typing import List
 
-class mergeSort:
+class MergeSort:
         """ This method does the divide and conquer step """
         def sort(self, a: List[int]) -> List[int]:
             if len(a) <= 1:
