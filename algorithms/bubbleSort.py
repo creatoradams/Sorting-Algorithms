@@ -1,4 +1,4 @@
-class BubbleSort:
+class bubbleSort:
     def bubble_sort(self, arr):
 
         # local helper to swap in-place
