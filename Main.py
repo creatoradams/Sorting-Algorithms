@@ -8,7 +8,7 @@ from algorithms import selectionSort   # kept for completeness; slot #4 remains 
 import numpy
 
 
-
+                # the algorithms variables are declared in ALGOS and run_case
 
 
 # Selection Sort Algorithm
@@ -41,7 +41,7 @@ ALGOS = {
     1: ("Bubble Sort", bubbleSort.bubbleSort().bubble_sort),
     2: ("Merge Sort", mergeSort.mergeSort().sort),
     3: ("Quick Sort", (lambda data: quickSort.quickSort.sort(numpy.array(list(data))))),
-    4: ("Selection Sort (replacing this line with the algorithm )", None),
+    4: ("Selection Sort (replacing this line with the algorithm )", None),  # still needs to be done
 }
 
 CASES = \
@@ -94,7 +94,7 @@ def run_case(alg_key: int):
         case_name, gen = CASES[c]
         print(f"\nIn {case_name.lower()},")
 
-        sizes = randomNUmbers.randomNumbers(SIZES)
+        sizes = randomNUmbers.randomNumbers(SIZES)  # creating variable
 
         def case_gen(n):
             arr = gen(n)
@@ -103,7 +103,7 @@ def run_case(alg_key: int):
             except TypeError:
                 return arr.tolist()
 
-        times = Timer.Time.timeMany(alg_func, sizes. case_gen)
+        times = Timer.Time.timeMany(alg_func, sizes. case_gen)  # creating variable
 
         for n, t in zip(sizes, times):
             if n == 100:
@@ -115,7 +115,7 @@ def run_case(alg_key: int):
 
         while prompt_yes_no("\nDo you want to input another N (Y/N)?"):
             n2 = int(input("What is the N? ").strip())
-            t2 = Timer.Time.timeMany(alg_func, [n2], case_gen)[0]
+            t2 = Timer.Time.timeMany(alg_func, [n2], case_gen)[0]  # creating variable, dont know if could put these all up at the top together with ALGOS or not
             print(f"\nFor N = {n2}, it takes {t2:.6f} seconds")
 
         print(f"\nCase Scenarios for {alg_name}")
